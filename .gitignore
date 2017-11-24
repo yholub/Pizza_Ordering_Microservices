@@ -25,7 +25,9 @@ _UpgradeReport_Files/
 bin/
 obj/
 TestResults/
-.vs/*
+*/.vs/*
+*/.vscode/*
+*/__pycache__/*
 ###################
 # Web publish log #
 ###################

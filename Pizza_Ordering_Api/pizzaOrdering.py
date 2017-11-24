@@ -82,8 +82,8 @@ class RpcClient(object):
                                        body=payload)
         return corr_id
 
-rpcClientOut = RpcClient('clientToServer') 
-rpcClientIn = RpcClient('serverToClient')
+rpcClientOut = RpcClient('rpc_queue') 
+
 
 # rabbitMQ connection
 # host = 'localhost'
@@ -104,8 +104,10 @@ rpcClientIn = RpcClient('serverToClient')
 @pizzaOrdering.route("/api/pizzas/fix")
 def getFixPizzas():
     
-    rpcClientOut.send_request("info")
-    fixPizzas = []
+    corrid = rpcClientOut.send_request("info")
+    while rpcClientOut.queue[corrid] is None:
+        sleep(0.1)
+    fixPizzas = rpcClientOut.queue[corrid].decode('utf-8')
 
     # for pizza in models.session.query(FixPizza).order_by(FixPizza.Id):
     #     ingredients = []
@@ -120,7 +122,7 @@ def getFixPizzas():
     #print(json.dumps(fixPizzas))
 
     # connection.close()
-    return json.dumps(fixPizzas)
+    return fixPizzas
 
 
 @pizzaOrdering.route("/api/ingredients")
